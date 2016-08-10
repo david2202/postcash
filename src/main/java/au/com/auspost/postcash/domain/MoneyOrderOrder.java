@@ -1,10 +1,13 @@
 package au.com.auspost.postcash.domain;
 
+import au.com.auspost.postcash.util.JacksonDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MoneyOrderOrder {
+public class    MoneyOrderOrder {
     private String transactionId;
     private MoneyOrderType type;
     private Date transactionDateTime;
@@ -28,6 +31,7 @@ public class MoneyOrderOrder {
         this.type = type;
     }
 
+    @JsonSerialize(using = JacksonDateSerializer.class)
     public Date getTransactionDateTime() {
         return transactionDateTime;
     }

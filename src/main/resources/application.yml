@@ -1,0 +1,21 @@
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+---
+spring:
+  profiles: dev
+  mail:
+    host: mail.optusnet.com.au
+    port: 25
+    username: davidrh
+    password: setassystemproperty
+---
+spring:
+  profiles: pdev
+  mail:
+    host: mail.optusnet.com.au
+    port: 25
+    username: davidrh
+    password: setassystemproperty

@@ -3,6 +3,8 @@ package au.com.auspost.postcash.domain;
 import java.math.BigDecimal;
 
 public class MoneyOrder {
+    private static int nextNumber = 1000000;
+
     private BigDecimal amount;
     private PayeeType payeeType;
     private String payeeName;
@@ -14,6 +16,19 @@ public class MoneyOrder {
     private Integer checkDigits;
     private String barcodeText;
     private String barcodeBase64;
+    private String barcodeMimeType;
+
+    public MoneyOrder() {
+        number = nextNumber++;
+    }
+
+    public String calculateBarcodeText() {
+        return "*" + number + calculateCheckDigits();
+    }
+
+    public Integer calculateCheckDigits() {
+        return number % 97;
+    }
 
     public BigDecimal getAmount() {
         return amount;
@@ -101,5 +116,13 @@ public class MoneyOrder {
 
     public void setBarcodeBase64(String barcodeBase64) {
         this.barcodeBase64 = barcodeBase64;
+    }
+
+    public String getBarcodeMimeType() {
+        return barcodeMimeType;
+    }
+
+    public void setBarcodeMimeType(String barcodeMimeType) {
+        this.barcodeMimeType = barcodeMimeType;
     }
 }
