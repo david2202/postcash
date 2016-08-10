@@ -3,6 +3,13 @@ package au.com.auspost.postcash.service;
 import au.com.auspost.postcash.domain.MoneyOrder;
 import au.com.auspost.postcash.domain.MoneyOrderOrder;
 import au.com.auspost.postcash.domain.MoneyOrderRequest;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfiguration;
@@ -19,10 +26,9 @@ import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class MoneyOrderService {
@@ -54,30 +60,22 @@ public class MoneyOrderService {
     }
 
     private String buildBarcode(String barcodeString) {
-        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         try {
-            Configuration cfg = builder.buildFromFile(barcodeConfigFile);
-            BarcodeGenerator gen = BarcodeUtil.getInstance().createBarcodeGenerator( cfg );
+            String charset = "UTF-8"; // or "ISO-8859-1"
+            Map hintMap = new HashMap();
+            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 
-            /*
-            OutputStream out = new java.io.FileOutputStream(new File("output.png"));
-            BitmapCanvasProvider provider = new BitmapCanvasProvider(
-                    out, "image/x-png", 300, BufferedImage.TYPE_BYTE_GRAY, true, 0);
-            gen.generateBarcode(provider, barcodeString);
-            provider.finish();
-            */
+            BitMatrix matrix = null;
+                matrix = new MultiFormatWriter().encode(
+                        new String(barcodeString.getBytes(charset), charset),
+                        BarcodeFormat.QR_CODE, 200, 200, hintMap);
 
-            BitmapCanvasProvider provider = new BitmapCanvasProvider(
-                    300, BufferedImage.TYPE_BYTE_GRAY, true, 0);
-            gen.generateBarcode(provider, barcodeString);
-            provider.finish();
-            BufferedImage barcodeImage = provider.getBufferedImage();
-
+            BufferedImage barcodeImage = MatrixToImageWriter.toBufferedImage(matrix);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(barcodeImage, "PNG", out);
             byte[] bytes = out.toByteArray();
             return Base64.encodeBase64String(bytes);
-        } catch (SAXException | IOException | ConfigurationException | BarcodeException e) {
+        } catch (WriterException | IOException e) {
             throw new IllegalStateException(e);
         }
     }

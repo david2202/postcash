@@ -23,7 +23,8 @@ public class MoneyOrder {
     }
 
     public String calculateBarcodeText() {
-        return "*" + number + calculateCheckDigits();
+        //return "*" + number + calculateCheckDigits();
+        return "136YOUR REWARD VOUCHER LUCKY WIN " + String.format("%05d", amount.multiply(new BigDecimal(100)).intValue());
     }
 
     public Integer calculateCheckDigits() {
